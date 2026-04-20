@@ -295,7 +295,11 @@ f'<img src="{plot_file_path_local}" style="display: block; width: 80%; max-width
             "| :--- | :--- | :--- | :--- | :--- |",
         ]
 
-        for user_name, p in stats["player_stats"].items():
+        player_stats_sorted = dict(
+            sorted(stats["player_stats"].items(), key=lambda x: x[1]["meters_rowed"], reverse=True)
+            )
+
+        for user_name, p in player_stats_sorted.items():
             lines.append(
                 f"| {user_name} "
                 f"| {p['meters_rowed']:,} "
