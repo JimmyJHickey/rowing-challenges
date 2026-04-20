@@ -3,6 +3,4 @@ __pycache__/
 concept2_workouts.csv
 requirements.txt
 rowing.ipynb
-run.py
-run.sh
-webpage_format.txt
+*.log

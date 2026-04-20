@@ -9,6 +9,8 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from shapely.geometry import LineString
 from pyproj import Geod
+from shapely.ops import substring
+
 
 class Challenge():
     def __init__(self,
@@ -16,12 +18,14 @@ class Challenge():
                  start_date,                
                  full_route_coords,
                  plot_type,
+                 flavor_text,
                  plot_file_path,
                  data_csv_path
                  ):
         
         self.challenge_name = challenge_name
         self.start_date = start_date
+        self.flavor_text = flavor_text
         self.plot_file_path = plot_file_path
         self.full_route_coords = full_route_coords
         self.plot_type = plot_type
@@ -212,7 +216,6 @@ class Challenge():
         # 2. CREATE GEOMETRY
         full_line = LineString(coords)
         # Using the accuracy fix from before
-        from shapely.ops import substring
         progress_line = substring(full_line, 0, progress_percent, normalized=True)
 
         # 3. PLOTTING WITH CARTOPY
@@ -273,7 +276,9 @@ class Challenge():
         plot_file_path_local = self.plot_file_path.split('jimmyjhickey.com/')[1]
 
         lines = [
-            f"# {self.challenge_name}",
+            f"## {self.challenge_name}",
+            "",
+            f"{self.flavor_text}",
             "",
             # f"![Route Map]({self.plot_file_path})",
 f'<img src="{plot_file_path_local}" style="display: block; width: 80%; max-width: 800px; margin: 20px auto; height: auto;" />'            
