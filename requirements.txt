@@ -1,0 +1,10 @@
+geopandas
+matplotlib
+contextily
+shapely
+pyproj
+cartopy
+logging
+datetime
+requests
+bs4

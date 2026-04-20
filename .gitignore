@@ -1,6 +1,5 @@
 .vscode/
 __pycache__/
 concept2_workouts.csv
-requirements.txt
 rowing.ipynb
 *.log
