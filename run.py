@@ -1,9 +1,20 @@
+import os
+import sys
+import builtins
+
+# This manually injects 'os' into the global namespace so that 
+# even if a broken library forgets to import it, it's already there.
+builtins.os = os
+
+import matplotlib
+matplotlib.use('Agg')  # This tells Matplotlib to run without a GUI
+import os
 from profile_scraper import ProfileScraper
 import json
 from challenge import Challenge
 
 
-json_path = "users.json"
+json_path = "/home/pi/git/rowing-challenges/users.json"
 with open(json_path, 'r') as file:
     users_data = json.load(file)
 for user in users_data:
@@ -11,22 +22,10 @@ for user in users_data:
     my_scraper = ProfileScraper(
         profile_url = user["profile_url"],
         user_name = user["user_name"], 
-        csv_path = "concept2_workouts.csv"
+        csv_path = "/home/pi/git/rowing-challenges/concept2_workouts.csv"
     )
     my_scraper.run()
 
-
-english_channel_challenge_name = "Rowing the English Channel"
-english_channel_coords = [(1.312, 51.127), (1.550, 51.060), (1.858, 50.951)]
-english_channel_challenge = Challenge(
-    challenge_name=english_channel_challenge_name,
-    start_date="2026-04-17",
-    full_route_coords = english_channel_coords,
-    plot_type="local",
-    flavor_text = "People can swim this, right? Surely we can row it.",
-    plot_file_path=f"../jimmyjhickey.com/img/rowing/{english_channel_challenge_name.replace(' ', '_')}.png",
-    data_csv_path="concept2_workouts.csv"
-)
 
 magellan_coords = [
     (-6.35, 36.78),    # Sanlúcar de Barrameda, Spain (Departure)
@@ -64,17 +63,16 @@ magellan_challenge = Challenge(
     full_route_coords = magellan_coords,
     plot_type="global",
     flavor_text = "Will we mutiny as well?",
-    plot_file_path=f"../jimmyjhickey.com/img/rowing/{magellan_challenge_name.replace(' ', '_')}.png",
-    data_csv_path="concept2_workouts.csv"
+    plot_file_path=f"/home/pi/git/jimmyjhickey.com/img/rowing/{magellan_challenge_name.replace(' ', '_')}.png",
+    data_csv_path="/home/pi/git/rowing-challenges/concept2_workouts.csv"
 )
 
 
-out_file = "../jimmyjhickey.com/rowing.md"
-with open('webpage_format.txt', 'r') as file:
+out_file = "/home/pi/git/jimmyjhickey.com/rowing.md"
+with open('/home/pi/git/rowing-challenges/webpage_format.txt', 'r') as file:
     template_content = file.read()
             
     final_webpage = template_content.format(
-        challenge_1=english_channel_challenge.to_markdown(),
         challenge_2=magellan_challenge.to_markdown()
     )
     
