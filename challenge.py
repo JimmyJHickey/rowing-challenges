@@ -1,16 +1,23 @@
+import os
+import numpy as np
 import matplotlib.pyplot as plt
 import geopandas as gpd
 import contextily as ctx
 from shapely.geometry import LineString
-from shapely.ops import substring
 import pandas as pd
 from datetime import datetime
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from shapely.geometry import LineString
 from pyproj import Geod
-from shapely.ops import substring
 
+try:
+    from shapely.ops import substring
+except ImportError:
+    # Manual fallback for older Shapely versions
+    def substring(geom, start_dist, end_dist, normalized=False):
+        return geom.interpolate(start_dist, normalized=normalized).union(
+               geom.interpolate(end_dist, normalized=normalized))
 
 class Challenge():
     def __init__(self,
@@ -37,13 +44,28 @@ class Challenge():
         self.data_csv_path = data_csv_path
         self.current_meters_rowed = 0
 
-    def get_route_length_meters(self, coords):
-        # The WGS84 ellipsoid is the global standard (used by GPS)
+    def get_route_length_meters(self, full_route_coords):
+        line = LineString(full_route_coords)
+        lons, lats = line.xy
+        total_length = 0
         geod = Geod(ellps="WGS84")
-        line = LineString(coords)
-        
-        # This calculates the length along the curve of the Earth
-        return geod.geometry_length(line)
+
+        # Loop through the points and calculate distance between each pair
+        for i in range(len(lons) - 1):
+            # inv returns (forward_azimuth, back_azimuth, distance)
+            _, _, distance = geod.inv(lons[i], lats[i], lons[i+1], lats[i+1])
+            total_length += distance
+        return total_length
+
+#    def get_route_length_meters(self, coords):
+#        # The WGS84 ellipsoid is the global standard (used by GPS)
+#        geod = Geod(ellps="WGS84")
+#        line = LineString(coords)
+#        
+#        # This calculates the length along the curve of the Earth
+#        lons, lats = line.xy
+#        return geod.line_length(lons, lats)
+#       # return geod.geometry_length(line)
 
     def _load_rowing_data(self):
         """
@@ -59,7 +81,7 @@ class Challenge():
         df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
         # Replace empty strings with NaN before numeric conversion
-        df.replace("", pd.NA, inplace=True)
+        df.replace("", np.nan, inplace=True)
 
         # Parse dates
         df["date"] = pd.to_datetime(df["date"], format="%m/%d/%y")
@@ -164,9 +186,13 @@ class Challenge():
 
         # 3. CONVERT TO MAP PROJECTION (Crucial Step)
         # We create a GeoSeries in Lat/Lon (4326) and convert to Web Mercator (3857)
-        gs_full = gpd.GeoSeries([full_line], crs="EPSG:4326").to_crs(epsg=3857)
-        gs_prog = gpd.GeoSeries([progress_line], crs="EPSG:4326").to_crs(epsg=3857)
+      
+        #gs_full = gpd.GeoSeries([full_line], crs="EPSG:4326").to_crs(epsg=3857)
+        #gs_prog = gpd.GeoSeries([progress_line], crs="EPSG:4326").to_crs(epsg=3857)
 
+        # We use the explicit 'init' syntax which the older PROJ library requires
+        gs_full = gpd.GeoSeries([full_line], crs={'init': 'epsg:4326'}).to_crs({'init': 'epsg:3857'})
+        gs_prog = gpd.GeoSeries([progress_line], crs={'init': "epsg:4326"}).to_crs({'init': 'epsg:3857'})
         
         # 4. PLOTTING
         # Use constrained_layout=True to help manage the space automatically
@@ -177,9 +203,28 @@ class Challenge():
         gs_prog.plot(ax=ax, color='#0047AB', linewidth=5, label='Current Progress')
 
         # Plot the "Boat"
-        boat_coords = gs_prog.geometry.iloc[0].coords[-1]
-        ax.scatter(boat_coords[0], boat_coords[1], color='red', s=100, zorder=5, label='Current Position')
+        #boat_coords = gs_prog.geometry.iloc[0].coords[-1]
+       
+       # Get the geometry object
+        prog_geom = gs_prog.geometry.iloc[0]
 
+        # Get the geometry object
+        prog_geom = gs_prog.geometry.iloc[0]
+
+        try:
+            # Try the standard way first (Single Line)
+            boat_coords = prog_geom.coords[-1]
+        except (NotImplementedError, AttributeError):
+            # If it's a Multi-part geometry, get the coordinates from the LAST part
+            # In older Shapely, we iterate through 'geoms' or the object itself
+            if hasattr(prog_geom, 'geoms'):
+                last_part = prog_geom.geoms[-1]
+            else:
+                last_part = prog_geom[-1]
+    
+            boat_coords = last_part.coords[-1]
+      
+        ax.scatter(boat_coords[0], boat_coords[1], color='red', s=100, zorder=5, label='Current Position')
        
         # 5. ADD THE BACKGROUND MAP
         ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
@@ -239,13 +284,36 @@ class Challenge():
                 transform=ccrs.Geodetic(), label='Full Expedition')
 
         # Plot Progress
-        prog_x, prog_y = progress_line.xy
+        # Instead of progress_line.xy
+        if progress_line.geom_type == 'LineString':
+            prog_x, prog_y = progress_line.xy
+        else:
+            # If it's a MultiLineString, we extract x and y from all segments
+            prog_x = []
+            prog_y = []
+            for line in progress_line.geoms:
+                x, y = line.xy
+                prog_x.extend(x)
+                prog_y.extend(y)
+
         ax.plot(prog_x, prog_y,
                 color='#0047AB', linewidth=4,
                 transform=ccrs.Geodetic(), label='Our Progress')
 
         # Plot Current Position
-        boat_lon, boat_lat = progress_line.coords[-1]
+        #boat_lon, boat_lat = progress_line.coords[-1]
+
+        # Check if progress_line is a MultiLineString or a single LineString
+        if progress_line.geom_type == 'MultiLineString':
+            # Get the last coordinate of the last segment in the collection
+            boat_lon, boat_lat = progress_line.geoms[-1].coords[-1]
+        elif progress_line.geom_type == 'LineString':
+            # Standard single line
+            boat_lon, boat_lat = progress_line.coords[-1]
+        else:
+            # Standard single line behavior
+            boat_lon, boat_lat = progress_line.bounds[0], progress_line.bounds[1]
+
         ax.plot(boat_lon, boat_lat, 'ro', markersize=8, 
                 transform=ccrs.Geodetic(), zorder=5)
 

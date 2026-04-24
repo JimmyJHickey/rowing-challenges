@@ -48,7 +48,7 @@ class ProfileScraper():
             return {row["workout_id"] for row in reader}
 
 
-    def append_workouts(self, csv_path: str, workouts: list[dict]) -> None:
+    def append_workouts(self, csv_path, workouts):
         """Append new workout rows to the CSV, creating it with a header if needed."""
         write_header = not os.path.exists(csv_path)
         with open(csv_path, "a", newline="", encoding="utf-8") as f:
@@ -70,7 +70,7 @@ class ProfileScraper():
         return response.text
 
 
-    def parse_log_page(self, html: str) -> list[dict]:
+    def parse_log_page(self, html):
         """Parse the logbook index page into a list of workout dicts."""
         soup = BeautifulSoup(html, "html.parser")
         entries = []
@@ -112,7 +112,7 @@ class ProfileScraper():
         return entries
 
 
-    def scrape_rowerg_detail(self, workout_url: str) -> dict | None:
+    def scrape_rowerg_detail(self, workout_url):
         """
         Scrape distance (meters), time, and calories from a RowErg workout page.
         Returns a dict with keys: distance_meters, time, calories.
