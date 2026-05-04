@@ -44,6 +44,7 @@ title: Rowing
 
 Just some apes in boats.
 
+{challenge_1}
 
 {challenge_2}
 
@@ -55,7 +56,7 @@ Just some apes in boats.
 People can swim this, right? Surely we can row it.
 
 <img src="img/rowing/Rowing_the_English_Channel.png" style="display: block; width: 80%; max-width: 800px; margin: 20px auto; height: auto;" />
-**Dates:** 2026-04-17 -- 2026-04-23 2026-04-23
+**Dates:** 2026-04-17 -- 2026-04-23
 
 **Meters rowed:** 44,270
 

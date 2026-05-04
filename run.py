@@ -26,6 +26,31 @@ for user in users_data:
     )
     my_scraper.run()
 
+north_channel_coords = [
+    (-5.885, 54.646),  # Start: Donaghadee Harbour, NI
+    (-5.800, 54.660),  # Exiting the coast into the main channel
+    (-5.700, 54.700),  # Mid-channel (The "Deep" water)
+    (-5.550, 54.750),  # Approaching the peak of the tidal curve
+    (-5.400, 54.800),  # Pushed North/East by the flood tide
+    (-5.200, 54.840),  # Turning toward the Scottish coastline
+    (-5.150, 54.855),  # Near Killantringan Lighthouse
+    (-5.120, 54.843),  # Approaching Portpatrick cliffs
+    (-5.118, 54.842)   # Finish: Portpatrick, Scotland
+]
+
+north_channel_name = "Rowing the North Channel"
+north_channel_flavor = "Also known as the Sruth na Maoile or the Sheuch."
+north_channel_challenge = Challenge(
+    challenge_name=north_channel_name,
+    start_date="2026-05-04",
+    full_route_coords = north_channel_coords,
+    plot_type="local",
+    flavor_text = north_channel_flavor,
+    plot_file_path=f"/home/pi/git/jimmyjhickey.com/img/rowing/{north_channel_name.replace(' ', '_')}.png",
+    data_csv_path="/home/pi/git/rowing-challenges/concept2_workouts.csv"
+)
+
+
 
 magellan_coords = [
     (-6.35, 36.78),    # Sanlúcar de Barrameda, Spain (Departure)
@@ -73,7 +98,8 @@ with open('/home/pi/git/rowing-challenges/webpage_format.txt', 'r') as file:
     template_content = file.read()
             
     final_webpage = template_content.format(
-        challenge_2=magellan_challenge.to_markdown()
+            challenge_1 = north_channel_challenge.to_markdown(),
+        challenge_2 = magellan_challenge.to_markdown()
     )
     
     with open(out_file, 'w') as output_file:
