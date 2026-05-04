@@ -199,15 +199,12 @@ class Challenge():
         fig, ax = plt.subplots(figsize=(12, 8), constrained_layout=True)
 
         # Plot the lines
-        gs_full.plot(ax=ax, color='black', linewidth=3, linestyle='--', alpha=0.3, label='Full Route')
-        gs_prog.plot(ax=ax, color='#0047AB', linewidth=5, label='Current Progress')
+        gs_full.plot(ax=ax, color='black', linewidth=3, linestyle='--', alpha=0.3, label='Full Route', zorder=2)
+        gs_prog.explode().plot(ax=ax, color='#0047AB', linewidth=5, label='Current Progress', zorder=3)
 
         # Plot the "Boat"
         #boat_coords = gs_prog.geometry.iloc[0].coords[-1]
        
-       # Get the geometry object
-        prog_geom = gs_prog.geometry.iloc[0]
-
         # Get the geometry object
         prog_geom = gs_prog.geometry.iloc[0]
 
