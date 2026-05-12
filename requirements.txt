@@ -4,7 +4,6 @@ contextily
 shapely
 pyproj
 cartopy
-logging
-datetime
 requests
+xyzservices==2022.9.0
 bs4

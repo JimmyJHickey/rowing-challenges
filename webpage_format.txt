@@ -51,6 +51,27 @@ Just some apes in boats.
 # Archive
 
 
+## Rowing the North Channel
+
+Also known as the Sruth na Maoile or the Sheuch.
+
+<img src="img/rowing/Rowing_the_North_Channel.png" style="display: block; width: 80%; max-width: 800px; margin: 20px auto; height: auto;" />
+**Dates:** 2026-05-04 -- 2026-05-11
+
+**Meters rowed:** 72,773
+
+**Total meters:** 55,576.7
+
+**Completion Percentage:** 100.0%
+
+| Name | Meters Rowed | % of Total | Time Rowed | Calories Burned |
+| :--- | :--- | :--- | :--- | :--- |
+| Jim Chimpsky | 27,744 | 49.92% | 3h 02m 33s | 1,375 |
+| Ham the Ast-row Chimp | 25,223 | 45.38% | 2h 29m 42s | 1,389 |
+| Oar-angutan | 13,248 | 23.84% | 1h 20m 36s | 670 |
+| Mo Monkeys Mo Problems | 6,558 | 11.8% | 0h 35m 11s | 340 |
+
+
 ## Rowing the English Channel
 
 People can swim this, right? Surely we can row it.

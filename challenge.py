@@ -171,82 +171,58 @@ class Challenge():
             "total_calories":       int(total_calories),
             "player_stats":         player_stats,
         }
-    
-
+        
     def generate_local_plot(self):
-        # 1. SETUP DATA
-        # Example coordinates for a Dover -> Calais crossing
-        total_meters_goal = self.get_route_length_meters(self.full_route_coords)
-        progress_percent = self.current_meters_rowed / total_meters_goal
+            # 1. SETUP DATA
+            total_meters_goal = self.get_route_length_meters(self.full_route_coords)
+            progress_percent = self.current_meters_rowed / total_meters_goal
 
-        # 2. CREATE GEOMETRY
-        full_line = LineString(self.full_route_coords)
-        # The "Fix": Accuracy-based splitting
-        progress_line = substring(full_line, 0, progress_percent, normalized=True)
+            # 2. CREATE GEOMETRY
+            full_line = LineString(self.full_route_coords)
+            progress_line = substring(full_line, 0, progress_percent, normalized=True)
 
-        # 3. CONVERT TO MAP PROJECTION (Crucial Step)
-        # We create a GeoSeries in Lat/Lon (4326) and convert to Web Mercator (3857)
-      
-        #gs_full = gpd.GeoSeries([full_line], crs="EPSG:4326").to_crs(epsg=3857)
-        #gs_prog = gpd.GeoSeries([progress_line], crs="EPSG:4326").to_crs(epsg=3857)
+            # 3. CONVERT TO MAP PROJECTION
+            gs_full = gpd.GeoSeries([full_line], crs="EPSG:4326").to_crs(epsg=3857)
+            gs_prog = gpd.GeoSeries([progress_line], crs="EPSG:4326").to_crs(epsg=3857)
+            
+            # 4. PLOTTING
+            fig, ax = plt.subplots(figsize=(12, 8))
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0) # Forces image to edges
 
-        # We use the explicit 'init' syntax which the older PROJ library requires
-        gs_full = gpd.GeoSeries([full_line], crs={'init': 'epsg:4326'}).to_crs({'init': 'epsg:3857'})
-        gs_prog = gpd.GeoSeries([progress_line], crs={'init': "epsg:4326"}).to_crs({'init': 'epsg:3857'})
+            gs_full.plot(ax=ax, color='black', linewidth=3, linestyle='--', alpha=0.3, zorder=2)
+            gs_prog.explode().plot(ax=ax, color='#0047AB', linewidth=5, zorder=3)
+
+            # Plot "Boat" (Current Position)
+            prog_geom = gs_prog.geometry.iloc[0]
+            # Simplified boat coordinate logic for modern Shapely
+            boat_coords = prog_geom.coords[-1] if not hasattr(prog_geom, 'geoms') else prog_geom.geoms[-1].coords[-1]
         
-        # 4. PLOTTING
-        # Use constrained_layout=True to help manage the space automatically
-        fig, ax = plt.subplots(figsize=(12, 8), constrained_layout=True)
-
-        # Plot the lines
-        gs_full.plot(ax=ax, color='black', linewidth=3, linestyle='--', alpha=0.3, label='Full Route', zorder=2)
-        gs_prog.explode().plot(ax=ax, color='#0047AB', linewidth=5, label='Current Progress', zorder=3)
-
-        # Plot the "Boat"
-        #boat_coords = gs_prog.geometry.iloc[0].coords[-1]
-       
-        # Get the geometry object
-        prog_geom = gs_prog.geometry.iloc[0]
-
-        try:
-            # Try the standard way first (Single Line)
-            boat_coords = prog_geom.coords[-1]
-        except (NotImplementedError, AttributeError):
-            # If it's a Multi-part geometry, get the coordinates from the LAST part
-            # In older Shapely, we iterate through 'geoms' or the object itself
-            if hasattr(prog_geom, 'geoms'):
-                last_part = prog_geom.geoms[-1]
-            else:
-                last_part = prog_geom[-1]
-    
-            boat_coords = last_part.coords[-1]
-      
-        ax.scatter(boat_coords[0], boat_coords[1], color='red', s=100, zorder=5, label='Current Position')
-       
-        # 5. ADD THE BACKGROUND MAP
-        ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
-
-        # THE FIXES FOR THE BORDER:
-        ax.set_axis_off()
+            ax.scatter(boat_coords[0], boat_coords[1], color='red', s=100, zorder=5, label='Current Position')
         
-        # 1. Remove internal margins from the axes
-        ax.margins(0)
-        ax.xaxis.set_major_locator(plt.NullLocator())
-        ax.yaxis.set_major_locator(plt.NullLocator())
+            # Set Extent with a small buffer (5000 meters) to stop markers from being cut off
+            bounds = gs_full.total_bounds
+            # Increase the buffer from 2000 to 10000 (10km) to zoom out
+            buffer = 10000 
 
-        # 2. Add legend (Note: If the legend is outside the map, 
-        # it will force a border. Keeping it 'upper right' inside is fine.)
-        plt.legend(loc='upper right')
+            bounds = gs_full.total_bounds
+            ax.set_xlim(bounds[0] - buffer, bounds[2] + buffer)
+            ax.set_ylim(bounds[1] - buffer, bounds[3] + buffer)
+            # 5. ADD THE BACKGROUND MAP
+            ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
 
-        # 3. Save with zero padding and tight bounding box
-        plt.savefig(
-            self.plot_file_path, 
-            dpi=300, 
-            bbox_inches='tight', # Removes the excess whitespace
-            pad_inches=0         # Sets that whitespace to zero
-        )
-        plt.close(fig) # Good practice to close the figure to free memory
+            ax.set_axis_off()
+            ax.margins(0)
+            
+            plt.legend(loc='lower right')
 
+            # 6. SAVE
+            plt.savefig(
+                self.plot_file_path, 
+                dpi=300, 
+                bbox_inches='tight', 
+                pad_inches=0.05 # Tiny pad helps prevents edge-clipping on some browsers
+            )
+            plt.close(fig)
 
     def generate_global_plot(self):
         # 1. SETUP DATA

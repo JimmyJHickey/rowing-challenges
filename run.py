@@ -13,8 +13,8 @@ from profile_scraper import ProfileScraper
 import json
 from challenge import Challenge
 
-
-json_path = "/home/pi/git/rowing-challenges/users.json"
+git_dir = "/home/jimmy/"
+json_path = f"{git_dir}rowing-challenges/users.json"
 with open(json_path, 'r') as file:
     users_data = json.load(file)
 for user in users_data:
@@ -22,35 +22,25 @@ for user in users_data:
     my_scraper = ProfileScraper(
         profile_url = user["profile_url"],
         user_name = user["user_name"], 
-        csv_path = "/home/pi/git/rowing-challenges/concept2_workouts.csv"
+        csv_path = f"{git_dir}/rowing-challenges/concept2_workouts.csv"
     )
     my_scraper.run()
 
-north_channel_coords = [
-    (-5.885, 54.646),  # Start: Donaghadee Harbour, NI
-    (-5.800, 54.660),  # Exiting the coast into the main channel
-    (-5.700, 54.700),  # Mid-channel (The "Deep" water)
-    (-5.550, 54.750),  # Approaching the peak of the tidal curve
-    (-5.400, 54.800),  # Pushed North/East by the flood tide
-    (-5.200, 54.840),  # Turning toward the Scottish coastline
-    (-5.150, 54.855),  # Near Killantringan Lighthouse
-    (-5.120, 54.843),  # Approaching Portpatrick cliffs
-    (-5.118, 54.842)   # Finish: Portpatrick, Scotland
+cook_strait_challenge_name = "Rowing the Cook Strait"
+cook_strait_coords = [
+(174.365, -41.199), # Start: Shore of Perano Head (Arapaoa Island)
+    (174.490, -41.240), # Mid-Strait: Staying in the deep channel
+    (174.615, -41.278)  # End: Shore of Cape Terawhiti (North Island)
 ]
-
-north_channel_name = "Rowing the North Channel"
-north_channel_flavor = "Also known as the Sruth na Maoile or the Sheuch."
-north_channel_challenge = Challenge(
-    challenge_name=north_channel_name,
-    start_date="2026-05-04",
-    full_route_coords = north_channel_coords,
+cook_strait_challenge = Challenge(
+    challenge_name=cook_strait_challenge_name,
+    start_date="2026-05-12",
+    full_route_coords = cook_strait_coords,
     plot_type="local",
-    flavor_text = north_channel_flavor,
-    plot_file_path=f"/home/pi/git/jimmyjhickey.com/img/rowing/{north_channel_name.replace(' ', '_')}.png",
-    data_csv_path="/home/pi/git/rowing-challenges/concept2_workouts.csv"
+    flavor_text = "Also known as Te Moana-o-Raukawa, which is probably better than naming it after a colonizer.",
+    plot_file_path=f"../jimmyjhickey.com/img/rowing/{cook_strait_challenge_name.replace(' ', '_')}.png",
+    data_csv_path="concept2_workouts.csv"
 )
-
-
 
 magellan_coords = [
     (-6.35, 36.78),    # Sanlúcar de Barrameda, Spain (Departure)
@@ -88,17 +78,17 @@ magellan_challenge = Challenge(
     full_route_coords = magellan_coords,
     plot_type="global",
     flavor_text = "Will we mutiny as well?",
-    plot_file_path=f"/home/pi/git/jimmyjhickey.com/img/rowing/{magellan_challenge_name.replace(' ', '_')}.png",
-    data_csv_path="/home/pi/git/rowing-challenges/concept2_workouts.csv"
+    plot_file_path=f"{git_dir}jimmyjhickey.com/img/rowing/{magellan_challenge_name.replace(' ', '_')}.png",
+    data_csv_path=f"{git_dir}rowing-challenges/concept2_workouts.csv"
 )
 
 
-out_file = "/home/pi/git/jimmyjhickey.com/rowing.md"
-with open('/home/pi/git/rowing-challenges/webpage_format.txt', 'r') as file:
+out_file = f"{git_dir}jimmyjhickey.com/rowing.md"
+with open(f'{git_dir}rowing-challenges/webpage_format.txt', 'r') as file:
     template_content = file.read()
             
     final_webpage = template_content.format(
-            challenge_1 = north_channel_challenge.to_markdown(),
+        challenge_1 = cook_strait_challenge.to_markdown(),
         challenge_2 = magellan_challenge.to_markdown()
     )
     
