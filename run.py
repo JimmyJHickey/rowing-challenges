@@ -38,7 +38,7 @@ cook_strait_challenge = Challenge(
     full_route_coords = cook_strait_coords,
     plot_type="local",
     flavor_text = "Also known as Te Moana-o-Raukawa, which is probably better than naming it after a colonizer.",
-    plot_file_path=f"../jimmyjhickey.com/img/rowing/{cook_strait_challenge_name.replace(' ', '_')}.png",
+    plot_file_path=f"../jimmyjhickey.com/img/rowing/{cook_strait_challenge_name.replace(' ', '_')}.html",
     data_csv_path="concept2_workouts.csv"
 )
 
@@ -78,7 +78,7 @@ magellan_challenge = Challenge(
     full_route_coords = magellan_coords,
     plot_type="global",
     flavor_text = "Will we mutiny as well?",
-    plot_file_path=f"{git_dir}jimmyjhickey.com/img/rowing/{magellan_challenge_name.replace(' ', '_')}.png",
+    plot_file_path=f"{git_dir}jimmyjhickey.com/img/rowing/{magellan_challenge_name.replace(' ', '_')}.html",
     data_csv_path=f"{git_dir}rowing-challenges/concept2_workouts.csv"
 )
 
