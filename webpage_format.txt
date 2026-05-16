@@ -48,8 +48,47 @@ Just some apes in boats.
 
 {challenge_2}
 
+
+
+
+
+
+
+
+
+
+
 # Archive
 
+
+
+
+
+
+
+
+
+
+## Rowing the Cook Strait
+
+Also known as Te Moana-o-Raukawa, which is probably better than naming it after a colonizer.
+
+<img src="img/rowing/Rowing_the_Cook_Strait.png" style="display: block; width: 80%; max-width: 800px; margin: 20px auto; height: auto;" />
+
+**Dates:** 2026-05-12 -- 2026-05-15
+
+**Meters rowed:** 41,277
+
+**Total meters:** 22,722.0
+
+**Completion Percentage:** 100.0%
+
+| Name | Meters Rowed | % of Total | Time Rowed | Calories Burned |
+| :--- | :--- | :--- | :--- | :--- |
+| Jim Chimpsky | 17,021 | 74.91% | 1h 42m 42s | 879 |
+| Oar-angutan | 12,161 | 53.52% | 1h 10m 16s | 622 |
+| Ham the Ast-row Chimp | 10,063 | 44.29% | 0h 59m 24s | 545 |
+| Mo Monkeys Mo Problems | 2,032 | 8.94% | 0h 10m 02s | 110 |
 
 ## Rowing the North Channel
 

@@ -26,19 +26,22 @@ for user in users_data:
     )
     my_scraper.run()
 
-cook_strait_challenge_name = "Rowing the Cook Strait"
-cook_strait_coords = [
-(174.365, -41.199), # Start: Shore of Perano Head (Arapaoa Island)
-    (174.490, -41.240), # Mid-Strait: Staying in the deep channel
-    (174.615, -41.278)  # End: Shore of Cape Terawhiti (North Island)
+molokai_challenge_name = "Rowing the Molokaʻi Channel"
+molokai_route_coords = [
+    (-157.309509, 21.102676),
+    (-157.350, 21.155),   # Open water
+    (-157.450, 21.205),   # Mid-channel
+    (-157.560, 21.255),   # Deep channel, approaching Oahu
+    (-157.640, 21.280),   # Closing on SE Oahu
+    (-157.676, 21.284),   # Sandy Beach Park, SE Oahu (finish)
 ]
-cook_strait_challenge = Challenge(
-    challenge_name=cook_strait_challenge_name,
-    start_date="2026-05-12",
-    full_route_coords = cook_strait_coords,
+molokai_challenge = Challenge(
+    challenge_name=molokai_challenge_name,
+    start_date="2026-05-16",
+    full_route_coords = molokai_route_coords,
     plot_type="local",
-    flavor_text = "Also known as Te Moana-o-Raukawa, which is probably better than naming it after a colonizer.",
-    plot_file_path=f"../jimmyjhickey.com/img/rowing/{cook_strait_challenge_name.replace(' ', '_')}.html",
+    flavor_text = "The sharks and man-of-war jellyfish won't impede us.",
+    plot_file_path=f"../jimmyjhickey.com/img/rowing/{molokai_challenge_name.replace(' ', '_')}.html",
     data_csv_path="concept2_workouts.csv"
 )
 
@@ -88,7 +91,7 @@ with open(f'{git_dir}rowing-challenges/webpage_format.txt', 'r') as file:
     template_content = file.read()
             
     final_webpage = template_content.format(
-        challenge_1 = cook_strait_challenge.to_markdown(),
+        challenge_1 = molokai_challenge.to_markdown(),
         challenge_2 = magellan_challenge.to_markdown()
     )
     
